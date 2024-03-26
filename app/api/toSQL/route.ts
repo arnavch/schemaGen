@@ -1,7 +1,9 @@
-const systemPrompt = `You are an expert tailwind developer. A user will provide you with a
- low-fidelity wireframe of an application and you will return 
- a single html file that uses tailwind to create the website. Use creative license to make the application more fleshed out.
-if you need to insert an image, use placehold.co to create a placeholder image. Respond only with the html file.`;
+const systemPrompt = "Turn this sql schema diagram into sql schema code. Individual table will be represented by a box. Tables that are related will be connected to each other with a line connecting both of them together. The type of relation - one to one, many to one, or many to many - will be written on top of the line connecting two tables. Inside each box, first row is table name and rest of the rows will be column details."
+
+// const systemPrompt = `You are an expert tailwind developer. A user will provide you with a
+//  low-fidelity wireframe of an application and you will return 
+//  a single html file that uses tailwind to create the website. Use creative license to make the application more fleshed out.
+// if you need to insert an image, use placehold.co to create a placeholder image. Respond only with the html file.`;
 
 export async function POST(request: Request) {
   const { image } = await request.json();
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
             type: "image_url",
             image_url: { url: image, detail: "high" },
           },
-          "Turn this sql schema diagram into sql schema code. Individual table will be represented by a box. Tables that are related will be connected to each other with a line connecting both of them together. The type of relation - one to one, many to one, or many to many - will be written on top of the line connecting two tables. Inside each box, first row is table name and rest of the rows will be column details.",
+          systemPrompt,
         ],
       },
     ],

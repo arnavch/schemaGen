@@ -14,12 +14,12 @@ const Tldraw = dynamic(async () => (await import("@tldraw/tldraw")).Tldraw, {
 });
 
 export default function Home() {
-  const [html, setHtml] = useState<null | string>(null);
+  const [sql, setSql] = useState<null | string>(null);
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setHtml(null);
+        setSql(null);
       }
     };
     window.addEventListener("keydown", listener);
@@ -33,17 +33,17 @@ export default function Home() {
     <>
       <div className={`w-screen h-screen`}>
         <Tldraw persistenceKey="tldraw">
-          <ExportButton setHtml={setHtml} />
+          <ExportButton setSql={setSql} />
         </Tldraw>
       </div>
-      {html &&
+      {sql &&
         ReactDOM.createPortal(
           <div
             className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center"
             style={{ zIndex: 2000, backgroundColor: "rgba(0,0,0,0.5)" }}
-            onClick={() => setHtml(null)}
+            onClick={() => setSql(null)}
           >
-            <PreviewModal html={html} setHtml={setHtml} />
+            <PreviewModal sql={sql} setSql={setSql} />
           </div>,
           document.body
         )}
@@ -51,10 +51,9 @@ export default function Home() {
   );
 }
 
-function ExportButton({ setHtml }: { setHtml: (html: string) => void }) {
+function ExportButton({ setSql }: { setSql: (sql: string) => void }) {
   const editor = useEditor();
   const [loading, setLoading] = useState(false);
-  // A tailwind styled button that is pinned to the bottom right of the screen
   return (
     <button
       onClick={async (e) => {
@@ -73,7 +72,7 @@ function ExportButton({ setHtml }: { setHtml: (html: string) => void }) {
             scale: 1,
           });
           const dataUrl = await blobToBase64(png!);
-          const resp = await fetch("/api/toHtml", {
+          const resp = await fetch("/api/toSQL", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -89,11 +88,7 @@ function ExportButton({ setHtml }: { setHtml: (html: string) => void }) {
           }
 
           const message = json.choices[0].message.content;
-          console.log(message)
-          // const start = message.indexOf("<!DOCTYPE html>");
-          // const end = message.indexOf("</html>");
-          // const html = message.slice(start, end + "</html>".length);
-          // setHtml(html);
+          setSql(message);
         } finally {
           setLoading(false);
         }
@@ -107,7 +102,7 @@ function ExportButton({ setHtml }: { setHtml: (html: string) => void }) {
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
         </div>
       ) : (
-        "Make Real"
+        "Make Schema"
       )}
     </button>
   );
